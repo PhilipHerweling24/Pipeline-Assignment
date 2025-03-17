@@ -55,4 +55,9 @@ public class MovieController {
                 })
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+    @GetMapping("/by-director")
+    public List<Movie> getMoviesByDirector(@RequestParam String director) {
+        return movieService.findMoviesByDirector(director);
+    }
 }

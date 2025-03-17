@@ -40,6 +40,10 @@ public class MovieService {
         movieRepository.deleteById(id);
     }
 
+    public List<Movie> findMoviesByDirector(String director) {
+        return movieRepository.findByDirector(director);
+    }
+
     private void validateMovie(Movie movie) {
         if (movie == null) {
             throw new IllegalArgumentException("Cannot save null movie");
