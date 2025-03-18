@@ -63,6 +63,7 @@ class MovieServiceTest {
         assertDoesNotThrow(() -> movieService.deleteMovie(1L));
     }
 
+    //test
     @Test
     void deleteMovieWhenNotExists() {
         when(movieRepository.existsById(1L)).thenReturn(false);
