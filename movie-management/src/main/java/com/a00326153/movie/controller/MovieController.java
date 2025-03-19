@@ -1,9 +1,13 @@
 package com.a00326153.movie.controller;
 
+import com.a00326153.movie.dto.MovieDto;
+import com.a00326153.movie.dto.ResponseDto;
 import com.a00326153.movie.entity.Movie;
-import com.a00326153.movie.service.MovieService;
+import com.a00326153.movie.serviceimpl.MovieServiceImpl;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.util.List;
 
@@ -11,53 +15,47 @@ import java.util.List;
 @RequestMapping("/movies")
 public class MovieController {
 
-    private final MovieService movieService;
+    private final MovieServiceImpl movieService;
 
-    public MovieController(MovieService movieService) {
+    public MovieController(MovieServiceImpl movieService) {
         this.movieService = movieService;
     }
 
     @GetMapping
-    public List<Movie> getAllMovies() {
-        return movieService.findAllMovies();
+    public ResponseEntity<List<MovieDto>> getAllMovies() {
+        List<MovieDto> movies = movieService.findAllMovies();
+        return ResponseEntity.ok(movies);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Movie> getMovieById(@PathVariable Long id) {
-        return movieService.findMovieById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<MovieDto> getMovieById(@PathVariable Long id) {
+        MovieDto movieDto = movieService.findMovieById(id);
+        return ResponseEntity.ok(movieDto);
+
     }
 
     @PostMapping
-    public Movie createMovie(@RequestBody Movie movie) {
-        return movieService.saveMovie(movie);
+    public ResponseEntity<ResponseDto> createMovie(@RequestBody Movie movie) {
+        movieService.saveMovie(movie);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseDto("201 ", "Movie Created Successfully"));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Movie> updateMovie(@PathVariable Long id, @RequestBody Movie movie) {
-        return movieService.findMovieById(id)
-                .map(existingMovie -> {
-                    existingMovie.setTitle(movie.getTitle());
-                    existingMovie.setDirector(movie.getDirector());
-                    existingMovie.setReleaseDate(movie.getReleaseDate());
-                    return ResponseEntity.ok(movieService.saveMovie(existingMovie));
-                })
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<ResponseDto> updateMovie(@PathVariable Long id, @RequestBody MovieDto movie) {
+        movieService.updateMovie(id, movie);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseDto("201 ", "Movie updated Successfully"));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteMovie(@PathVariable Long id) {
-        return movieService.findMovieById(id)
-                .map(movie -> {
-                    movieService.deleteMovie(movie.getId());
-                    return ResponseEntity.ok().<Void>build();
-                })
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<ResponseDto> deleteMovie(@PathVariable Long id) {
+        movieService.deleteMovie(id);
+        return ResponseEntity.status(HttpStatus.CREATED).body( new ResponseDto("201 ", "Movie has been deleted successfully"));
     }
 
-    @GetMapping("/by-director")
-    public List<Movie> getMoviesByDirector(@RequestParam String director) {
-        return movieService.findMoviesByDirector(director);
+    @GetMapping("/director")
+    public ResponseEntity<List<MovieDto>> findMoviesByDirector(@RequestParam String director) {
+        return ResponseEntity.ok(movieService.findMoviesByDirector(director));
     }
+
+
 }
