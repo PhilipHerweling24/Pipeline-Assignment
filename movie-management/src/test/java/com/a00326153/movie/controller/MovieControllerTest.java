@@ -1,65 +1,142 @@
 package com.a00326153.movie.controller;
 
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.a00326153.movie.dto.MovieDto;
-import com.a00326153.movie.dto.ResponseDto;
+import com.a00326153.movie.entity.Movie;
 import com.a00326153.movie.serviceimpl.MovieServiceImpl;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.Arrays;
 
+@WebMvcTest(MovieController.class)
 class MovieControllerTest {
 
+    @Autowired
     private MockMvc mockMvc;
 
-    @Mock
-    private MovieServiceImpl movieService;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-    @InjectMocks
-    private MovieController movieController;
+    @MockBean
+    private MovieServiceImpl movieService;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(movieController).build();
+
     }
 
-    @Test
-    void testGetAllMovies_ReturnsAllMovies() throws Exception {
+    @Test // Test for retrieving all movies
+    void getAllMovies() throws Exception {
         // Arrange
-        when(movieService.findAllMovies()).thenReturn(Arrays.asList(
+        List<MovieDto> movieList = Arrays.asList(
                 new MovieDto(1L, "Inception", "Christopher Nolan", 2010),
                 new MovieDto(2L, "The Dark Knight", "Christopher Nolan", 2008)
-        ));
+        );
+        given(movieService.findAllMovies()).willReturn(movieList);
 
         // Act & Assert
         mockMvc.perform(get("/movies")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].title").value("Inception"))
-                .andExpect(jsonPath("$[1].title").value("The Dark Knight"));
+                .andExpect(jsonPath("$[0].title", is("Inception")))
+                .andExpect(jsonPath("$[1].title", is("The Dark Knight")));
     }
 
-    @Test
-    void testGetMovieById_WhenMovieExists_ReturnsMovie() throws Exception {
+    @Test // Test for retrieving a movie by ID when the movie exists
+    void getMovieByIdFound() throws Exception {
         // Arrange
-        when(movieService.findMovieById(1L)).thenReturn(new MovieDto(1L, "Inception", "Christopher Nolan", 2010));
+        MovieDto movieDto = new MovieDto(1L, "Inception", "Christopher Nolan", 2010);
+        given(movieService.findMovieById(1L)).willReturn(movieDto);
 
         // Act & Assert
         mockMvc.perform(get("/movies/{id}", 1)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("Inception"));
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.title", is("Inception")));
     }
-    
+
+    @Test // Test for creating a movie successfully
+    void createMovieOK() throws Exception {
+        // Arrange
+        Movie movie = new Movie();
+        movie.setTitle("Inception");
+        movie.setDirector("Christopher Nolan");
+        movie.setReleaseDate(2010);
+        // The service returns a MovieDto after saving
+        MovieDto savedMovieDto = new MovieDto(1L, "Inception", "Christopher Nolan", 2010);
+        given(movieService.saveMovie(any(Movie.class))).willReturn(savedMovieDto);
+
+        // Act & Assert
+        mockMvc.perform(post("/movies")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(movie)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.statusCode", is("201 ")))
+                .andExpect(jsonPath("$.statusMsg", is("Movie Created Successfully")));
+    }
+
+    @Test // Test for updating a movie successfully
+    void updateMovieOK() throws Exception {
+        // Arrange
+        MovieDto updateDto = new MovieDto(null, "Inception Updated", "Christopher Nolan", 2010);
+        // Service returns updated MovieDto, but controller returns fixed ResponseDto
+        given(movieService.updateMovie(anyLong(), any(MovieDto.class)))
+                .willReturn(new MovieDto(1L, "Inception Updated", "Christopher Nolan", 2010));
+
+        // Act & Assert
+        mockMvc.perform(put("/movies/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateDto)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.statusCode", is("201 ")))
+                .andExpect(jsonPath("$.statusMsg", is("Movie updated Successfully")));
+    }
+
+    @Test // Test for deleting a movie successfully
+    void deleteMovieOK() throws Exception {
+        // Arrange
+        // For deletion, we assume the service completes without exceptions.
+
+        // Act & Assert
+        mockMvc.perform(delete("/movies/{id}", 1))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.statusCode", is("201 ")))
+                .andExpect(jsonPath("$.statusMsg", is("Movie has been deleted successfully")));
+    }
+
+    @Test // Test for retrieving movies by director
+    void findMoviesByDirector() throws Exception {
+        // Arrange
+        List<MovieDto> movieList = Arrays.asList(
+                new MovieDto(1L, "Inception", "Christopher Nolan", 2010)
+        );
+        given(movieService.findMoviesByDirector(anyString())).willReturn(movieList);
+
+        // Act & Assert
+        mockMvc.perform(get("/movies/director")
+                        .param("director", "Christopher Nolan")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].title", is("Inception")));
+    }
 }
