@@ -5,6 +5,10 @@ import com.a00326153.movie.entity.Movie;
 
 public class MovieMapper {
 
+    private MovieMapper() {
+        //Private constructor to prevent instantiation
+    }
+
     public static MovieDto mapToMovieDto(Movie movie){
         MovieDto movieDto = new MovieDto();
         movieDto.setId(movie.getId());

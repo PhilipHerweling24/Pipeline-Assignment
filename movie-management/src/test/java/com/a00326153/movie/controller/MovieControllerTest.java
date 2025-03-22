@@ -41,7 +41,7 @@ class MovieControllerTest {
 
     @BeforeEach
     void setUp() {
-
+        //@WebMvcTest takes care of setting up the application
     }
 
     @Test // Test for retrieving all movies
