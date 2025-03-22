@@ -8,6 +8,7 @@ class MovieManagementApplicationTests {
 
 	@Test
 	void contextLoads() {
+		//If the context fails to load, this test will fail automatically.
 	}
 
 }
