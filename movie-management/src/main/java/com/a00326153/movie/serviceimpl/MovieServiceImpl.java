@@ -19,7 +19,7 @@ public class MovieServiceImpl implements MovieService {
     }
 
     public List<MovieDto> findAllMovies() {
-        return movieRepository.findAll().stream().map(movie -> MovieMapper.mapToMovieDto(movie)).toList();
+        return movieRepository.findAll().stream().map(MovieMapper::mapToMovieDto).toList();
     }
 
     public MovieDto findMovieById(Long id) {
@@ -48,7 +48,7 @@ public class MovieServiceImpl implements MovieService {
     }
 
     public List<MovieDto> findMoviesByDirector(String director) {
-        return movieRepository.findByDirector(director).stream().map(movie -> MovieMapper.mapToMovieDto(movie)).toList();
+        return movieRepository.findByDirector(director).stream().map(MovieMapper::mapToMovieDto).toList();
     }
 
     private void validateMovie(Movie movie) {
