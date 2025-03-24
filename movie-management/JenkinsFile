@@ -47,15 +47,6 @@ pipeline {
             }
         }
 
-        stage('Code Coverage') {
-            steps {
-                dir('movie-management') {
-                    echo 'Generating JaCoCo coverage report...'
-                    bat "mvn jacoco:report"
-                }
-            }
-        }
-
         stage('SonarQube Analysis') {
             steps {
                 dir('movie-management') {
