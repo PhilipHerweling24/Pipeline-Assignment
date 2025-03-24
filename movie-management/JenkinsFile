@@ -5,6 +5,7 @@ pipeline {
         MAVEN_OPTS = '-Dmaven.test.failure.ignore=false'
     }
 
+    stages {
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/PhilipHerweling24/Pipeline-Assignment.git'
@@ -32,14 +33,17 @@ pipeline {
 
         stage('Karate Tests') {
             steps {
-                script {
-                    karateOutputPath = 'target/karate-reports'
-                    def result = sh(script: "mvn test -Dkarate.options=\"--tags @smoke\" -Dkarate.output.path=${karateOutputPath}", returnStatus: true)
-                    if (result != 0) {
-                        error "Karate tests failed"
+                dir('movie-management') {
+                    echo 'Running Karate tests...'
+                    script {
+                        def karateOutputPath = 'target/karate-reports'
+                        def result = bat(script: "mvn test -Dkarate.options=\"--tags @smoke\" -Dkarate.output.path=${karateOutputPath}", returnStatus: true)
+                        if (result != 0) {
+                            error "Karate tests failed"
+                        }
                     }
+                    junit 'target/surefire-reports/*.xml'
                 }
-                junit 'target/surefire-reports/*.xml'
             }
         }
 
@@ -81,5 +85,6 @@ pipeline {
         }
     }
 }
+
 
 
