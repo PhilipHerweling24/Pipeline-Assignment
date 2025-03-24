@@ -67,9 +67,8 @@ pipeline {
                             -Dsonar.sourceEncoding=UTF-8 ^
                             -Dsonar.host.url=http://localhost:9000 ^
                             -Dsonar.scm.disabled=true ^
-                            -Dsonar.exclusions=**/*.test.*,**/test/** ^
                             -Dsonar.java.binaries=target/classes ^
-                            -Dsonar.login=sqa_f12ad9b340d9d1501e892bd1520b4214e5b2c00e
+                            -Dsonar.token=sqa_f12ad9b340d9d1501e892bd1520b4214e5b2c00e
                         """
                     }
                 }
