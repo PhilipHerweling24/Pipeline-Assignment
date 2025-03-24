@@ -58,14 +58,17 @@ pipeline {
                         mvn sonar:sonar ^
                             -Dsonar.projectKey=pipeline-assignment ^
                             -Dsonar.projectName="Movie Management API" ^
-                            -Dsonar.projectVersion=0.1 ^
+                            -Dsonar.projectVersion=1.0 ^
+                            -Dsonar.projectBaseDir=movie-management ^
                             -Dsonar.sources=src/main/java ^
                             -Dsonar.tests=src/test/java ^
-                            -Dsonar.java.binaries=target/classes ^
                             -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml ^
+                            -Dsonar.language=java ^
                             -Dsonar.sourceEncoding=UTF-8 ^
-                            -Dsonar.scm.disabled=true ^
                             -Dsonar.host.url=http://localhost:9000 ^
+                            -Dsonar.scm.disabled=true ^
+                            -Dsonar.exclusions=**/*.test.*,**/test/** ^
+                            -Dsonar.java.binaries=target/classes ^
                             -Dsonar.login=sqa_f12ad9b340d9d1501e892bd1520b4214e5b2c00e
                         """
                     }
