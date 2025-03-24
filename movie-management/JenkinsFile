@@ -1,17 +1,21 @@
 pipeline {
     agent any
 
+    environment {
+        MAVEN_OPTS = '-Dmaven.test.failure.ignore=false'
+    }
+
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/PhilipHerweling24/Pipeline-Assignment.git'
+                git 'https://github.com/PhilipHerweling24/Pipeline-Assignment.git'
             }
         }
 
         stage('Build') {
             steps {
-                echo 'Building the project...'
                 dir('movie-management') {
+                    echo 'Building the project...'
                     bat "mvn clean compile"
                 }
             }
@@ -20,8 +24,9 @@ pipeline {
         stage('Unit & Integration Tests') {
             steps {
                 dir('movie-management') {
+                    echo 'Running unit & integration tests...'
                     bat "mvn test"
-                    junit '**/target/surefire-reports/*.xml'
+                    junit 'target/surefire-reports/*.xml'
                 }
             }
         }
@@ -29,7 +34,10 @@ pipeline {
         stage('Karate Tests') {
             steps {
                 dir('movie-management') {
+                    echo 'Running Karate tests...'
                     bat "mvn test -Dtest=KarateTestRunner"
+                    karateOutputPath = 'target/karate-reports'
+                    junit '**/target/karate-reports/*.xml'
                 }
             }
         }
@@ -37,7 +45,18 @@ pipeline {
         stage('Code Coverage') {
             steps {
                 dir('movie-management') {
+                    echo 'Generating JaCoCo coverage report...'
                     bat "mvn jacoco:report"
+                }
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                dir('movie-management') {
+                    withSonarQubeEnv('MySonarQubeServer') {
+                        bat "mvn sonar:sonar -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml"
+                    }
                 }
             }
         }
@@ -45,6 +64,7 @@ pipeline {
         stage('Package') {
             steps {
                 dir('movie-management') {
+                    echo 'Packaging the application...'
                     bat "mvn package"
                 }
             }
@@ -60,4 +80,5 @@ pipeline {
         }
     }
 }
+
 
