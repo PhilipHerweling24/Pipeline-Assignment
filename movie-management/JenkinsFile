@@ -53,7 +53,7 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 dir('movie-management') {
-                    withSonarQubeEnv('MySonarQubeServer') {
+                    withSonarQubeEnv('sonarqube') {
                         bat """
                         mvn sonar:sonar ^
                             -Dsonar.projectKey=pipeline-assignment ^
