@@ -1,0 +1,81 @@
+pipeline {
+    agent any
+
+    environment {
+        MAVEN_OPTS = "-Dmaven.test.failure.ignore=false"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/PhilipHerweling24/Pipeline-Assignment.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo 'Building the project...'
+                bat 'mvn clean compile'
+            }
+        }
+
+        stage('Unit & Integration Tests') {
+            steps {
+                echo 'Running unit and integration tests...'
+                bat 'mvn test verify'
+            }
+            post {
+                always {
+                    echo 'Publishing JUnit test reports...'
+                    junit '**/target/surefire-reports/*.xml'
+                    junit '**/target/failsafe-reports/*.xml'
+                }
+            }
+        }
+
+        stage('Karate Tests') {
+            steps {
+                echo 'Running Karate API tests...'
+                bat 'mvn test -Dtest=*KarateTestRunner'
+            }
+            post {
+                always {
+                    echo 'Publishing Karate test results...'
+                    junit '**/target/karate-reports/*.xml'
+                }
+            }
+        }
+
+        stage('Code Coverage') {
+            steps {
+                echo 'Generating JaCoCo coverage report...'
+                bat 'mvn jacoco:report'
+            }
+            post {
+                always {
+                    echo 'Saving coverage files for Sonar or report viewers...'
+                    archiveArtifacts artifacts: '**/target/site/jacoco/*.*', fingerprint: true
+                }
+            }
+        }
+
+        stage('Package') {
+            steps {
+                echo 'Packaging the application...'
+                bat 'mvn package'
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline finished.'
+        }
+        success {
+            echo 'Build succeeded!'
+        }
+        failure {
+            echo 'Build failed.'
+        }
+    }
+}
