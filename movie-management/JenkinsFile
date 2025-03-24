@@ -55,7 +55,14 @@ pipeline {
                 dir('movie-management') {
                     echo 'Running SonarQube analysis...'
                     withSonarQubeEnv('sonarqube') {
-                        bat "mvn sonar:sonar"
+                        bat """
+                        mvn sonar:sonar ^
+                          -Dsonar.projectVersion=0.1 ^
+                          -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml ^
+                          -Dsonar.sources=src/main/java ^
+                          -Dsonar.tests=src/test/java ^
+                          -Dsonar.java.binaries=target/classes
+                        """
                     }
                 }
             }
