@@ -11,15 +11,10 @@ public class Movie {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    //@NotBlank(message = "Name cannot be left blank")
-    //@Size(min = 3, max = 50, message = "Name has to be between 3 and 50 characters long")
     private String title;
 
-    //@NotBlank(message = "Name cannot be left blank")
-    //@Size(min = 3, max = 50, message = "Name has to be between 3 and 50 characters long")
     private String director;
 
-    //@NotBlank(message = "release date can not be blank")
     private int releaseDate;
 
 }
