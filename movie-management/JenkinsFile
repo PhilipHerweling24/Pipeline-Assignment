@@ -53,9 +53,12 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 dir('movie-management') {
-                    echo 'Running SonarQube analysis...'
+                    echo '📡 Running SonarQube analysis...'
                     withSonarQubeEnv('sonarqube') {
-                        bat "mvn sonar:sonar"
+                        bat "mvn sonar:sonar -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml"
+                    }
+                    timeout(time: 2, unit: 'MINUTES') {
+                        waitForQualityGate abortPipeline: true
                     }
                 }
             }
