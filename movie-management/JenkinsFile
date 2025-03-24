@@ -5,10 +5,9 @@ pipeline {
         MAVEN_OPTS = '-Dmaven.test.failure.ignore=false'
     }
 
-    stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/PhilipHerweling24/Pipeline-Assignment.git'
+                git branch: 'main', url: 'https://github.com/PhilipHerweling24/Pipeline-Assignment.git'
             }
         }
 
