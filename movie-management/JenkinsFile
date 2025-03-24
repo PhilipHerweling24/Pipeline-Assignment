@@ -33,12 +33,14 @@ pipeline {
 
         stage('Karate Tests') {
             steps {
-                dir('movie-management') {
-                    echo 'Running Karate tests...'
-                    bat "mvn test -Dtest=KarateTestRunner"
+                script {
                     karateOutputPath = 'target/karate-reports'
-                    junit '**/target/karate-reports/*.xml'
+                    def result = sh(script: "mvn test -Dkarate.options=\"--tags @smoke\" -Dkarate.output.path=${karateOutputPath}", returnStatus: true)
+                    if (result != 0) {
+                        error "Karate tests failed"
+                    }
                 }
+                junit 'target/surefire-reports/*.xml'
             }
         }
 
