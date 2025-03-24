@@ -54,7 +54,9 @@ pipeline {
             steps {
                 dir('movie-management') {
                     echo 'Running SonarQube analysis...'
-                    bat "mvn sonar:sonar"
+                    withSonarQubeEnv('sonarqube') {
+                        bat "mvn sonar:sonar"
+                    }
                 }
             }
         }
