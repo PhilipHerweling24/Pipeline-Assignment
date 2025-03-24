@@ -35,14 +35,17 @@ pipeline {
             steps {
                 dir('movie-management') {
                     echo 'Running Karate tests...'
-                    script {
-                        def karateOutputPath = 'target/karate-reports'
-                        def result = bat(script: "mvn test -Dkarate.options=\"--tags @smoke\" -Dkarate.output.path=${karateOutputPath}", returnStatus: true)
-                        if (result != 0) {
-                            error "Karate tests failed"
-                        }
-                    }
+                    bat "mvn test -Dkarate.options=\"--tags @smoke\""
                     junit 'target/surefire-reports/*.xml'
+                }
+            }
+        }
+
+        stage('Code Coverage') {
+            steps {
+                dir('movie-management') {
+                    echo 'Generating JaCoCo report...'
+                    bat "mvn jacoco:report"
                 }
             }
         }
@@ -50,9 +53,8 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 dir('movie-management') {
-                    withSonarQubeEnv('MySonarQubeServer') {
-                        bat "mvn sonar:sonar -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml"
-                    }
+                    echo 'Running SonarQube analysis...'
+                    bat "mvn sonar:sonar"
                 }
             }
         }
