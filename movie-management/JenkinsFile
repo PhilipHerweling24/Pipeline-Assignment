@@ -21,17 +21,15 @@ pipeline {
             }
         }
 
-        stage('Unit & Integration Tests') {
+        stage('Tests') {
             steps {
                 dir('movie-management') {
                     echo 'Running unit & integration tests...'
-                    bat "mvn test"
+                    bat "mvn test -Dtest=KarateSpringBootTestIT"
                     junit 'target/surefire-reports/*.xml'
                 }
             }
         }
-
-        
 
         stage('Code Coverage') {
             steps {
