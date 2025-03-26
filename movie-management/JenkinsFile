@@ -35,7 +35,7 @@ pipeline {
             steps {
                 dir('movie-management') {
                     echo 'Running Karate tests...'
-                    bat "mvn test -Dkarate.options=\"--tags @smoke\""
+                    bat "mvn test -Dtest=KarateSpringBootTestIT"
                     junit 'target/surefire-reports/*.xml'
                 }
             }
