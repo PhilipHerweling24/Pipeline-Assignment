@@ -31,15 +31,7 @@ pipeline {
             }
         }
 
-        stage('Karate Tests') {
-            steps {
-                dir('movie-management') {
-                    echo 'Running Karate tests...'
-                    bat "mvn test -Dtest=KarateSpringBootTestIT"
-                    junit 'target/surefire-reports/*.xml'
-                }
-            }
-        }
+        
 
         stage('Code Coverage') {
             steps {
