@@ -26,6 +26,7 @@ pipeline {
                 dir('movie-management') {
                     echo 'Running unit & integration tests...'
                     bat "mvn test -Dtest=KarateSpringBootTestIT"
+                    bat "mvn test"
                     junit 'target/surefire-reports/*.xml'
                 }
             }
