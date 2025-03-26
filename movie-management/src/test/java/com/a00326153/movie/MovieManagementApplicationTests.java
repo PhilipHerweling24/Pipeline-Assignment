@@ -1,7 +1,6 @@
 package com.a00326153.movie;
 
 import com.intuit.karate.junit5.Karate;
-import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
