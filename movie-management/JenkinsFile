@@ -29,7 +29,7 @@ pipeline {
                     bat "mvn test"
                     junit 'target/surefire-reports/*.xml'
                     publishHTML([
-                        reportDir: 'movie-management/target/karate-reports',
+                        reportDir: 'target/karate-reports/karate-summary.html',
                         reportFiles: 'karate-summary.html',
                         reportName: 'Karate Test Report'
                     ])
