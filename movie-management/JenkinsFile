@@ -32,6 +32,21 @@ pipeline {
             }
         }
 
+        stage('Security Scan (OWASP)') {
+            steps {
+                dir('movie-management') {
+                    echo 'Running OWASP Dependency-Check...'
+                    bat "mvn org.owasp:dependency-check-maven:check"
+                    archiveArtifacts artifacts: 'movie-management/target/dependency-check-report.html', allowEmptyArchive: true
+                    publishHTML(target: [
+                        reportDir: 'movie-management/target',
+                        reportFiles: 'dependency-check-report.html',
+                        reportName: 'OWASP Dependency Check Report'
+                    ])
+                }
+            }
+        }
+
         stage('Code Coverage') {
             steps {
                 dir('movie-management') {
