@@ -28,6 +28,11 @@ pipeline {
                     bat "mvn test -Dtest=KarateSpringBootTestIT"
                     bat "mvn test"
                     junit 'target/surefire-reports/*.xml'
+                    publishHTML([
+                        reportDir: 'movie-management/target/karate-reports',
+                        reportFiles: 'karate-summary.html',
+                        reportName: 'Karate Test Report'
+                    ])
                 }
             }
         }
