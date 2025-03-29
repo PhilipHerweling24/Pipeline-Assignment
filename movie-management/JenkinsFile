@@ -3,8 +3,7 @@ pipeline {
 
     environment {
         MAVEN_OPTS = '-Dmaven.test.failure.ignore=false'
-        DOCKERHUB_USERNAME = credentials('Dockerhub').username
-        DOCKERHUB_TOKEN = credentials('Dockerhub').password
+        DOCKERHUB = credentials('Dockerhub')
     }
 
     stages {
@@ -112,7 +111,7 @@ pipeline {
                                 def imageTag = "latest"
 
                                 echo "Logging in to Docker Hub..."
-                                sh "echo ${DOCKERHUB_TOKEN} | docker login -u ${DOCKERHUB_USERNAME} --password-stdin"
+                                sh "echo ${DOCKERHUB_PSW} | docker login -u ${DOCKERHUB_USR} --password-stdin"
 
                                 echo "Building Docker image..."
                                 sh "docker build -t ${dockerImage}:${imageTag} ."
