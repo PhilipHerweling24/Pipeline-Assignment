@@ -103,11 +103,13 @@ pipeline {
         }
 
 
+
+
         stage('Deploy to EC2') {
             steps {
                 echo 'Deploying application to EC2 using Ansible...'
                 script {
-                    bat 'wsl bash -c "cd \\"/mnt/c/Users/miggy/OneDrive/Documents/1 Masters/Semester 2/Continuous Build and Delivery/Pipeline Assignment/Pipeline-Assignment/movie-management\\" && ansible-playbook -i inventory.ini deploy.yaml"'
+                    bat 'wsl ansible-playbook -i inventory.ini deploy.yaml"'
                 }
             }
         }
