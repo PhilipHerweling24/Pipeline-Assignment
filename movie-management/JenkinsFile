@@ -103,6 +103,15 @@ pipeline {
         }
     }
 
+    stage('Deploy to EC2') {
+        steps {
+            dir('movie-management') {
+                echo 'Running Ansible playbook...'
+                sh 'ansible-playbook -i hosts playbook.yml'
+            }
+        }
+    }
+
     post {
         always {
             echo 'Pipeline finished.'

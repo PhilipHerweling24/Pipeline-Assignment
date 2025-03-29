@@ -1,0 +1,41 @@
+---
+- name: Deploy Movie Management API using Docker
+  hosts: movie_api
+  become: yes
+
+  vars:
+    app_name: movie-api
+    docker_image: philipherweling/movie-management:latest
+    container_port: 8081
+
+  tasks:
+    - name: Ensure Docker is installed
+      yum:
+        name: docker
+        state: present
+
+    - name: Start Docker service
+      systemd:
+        name: docker
+        enabled: yes
+        state: started
+
+    - name: Remove existing container (if any)
+      docker_container:
+        name: "movie-management-api"
+        state: absent
+        force_kill: yes
+
+    - name: Pull latest image from Docker Hub
+      docker_image:
+        name: "philipherweling/movie-management:latest"
+        source: pull
+
+    - name: Run the Docker container
+      docker_container:
+        name: "movie-management-api"
+        image: "philipherweling/movie-management:latest"
+        state: started
+        restart_policy: always
+        ports:
+          - "8081:8081"
