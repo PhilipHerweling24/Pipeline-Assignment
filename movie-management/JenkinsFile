@@ -111,7 +111,9 @@ pipeline {
                                 def imageTag = "latest"
 
                                 echo "Logging in to Docker Hub..."
-                                sh "echo ${DOCKERHUB_PSW} | docker login -u ${DOCKERHUB_USR} --password-stdin"
+                                sh '''
+                                    echo "$DOCKERHUB_PSW" | docker login -u "$DOCKERHUB_USR" --password-stdin
+                                '''
 
                                 echo "Building Docker image..."
                                 sh "docker build -t ${dockerImage}:${imageTag} ."
