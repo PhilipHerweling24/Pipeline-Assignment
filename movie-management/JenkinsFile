@@ -26,12 +26,12 @@ pipeline {
                 dir('movie-management') {
                     echo 'Running unit & integration tests'
                     bat "mvn test -Dtest=KarateSpringBootTestIT"
-                    archiveArtifacts artifacts: 'target/karate-reports/karate-summary.html', allowEmptyArchive: true
-                    publishHTML([
-                        reportDir: 'target/karate-reports',
-                        reportFiles: 'karate-summary.html',
-                        reportName: 'Karate Test Report'
-                    ])
+                    //archiveArtifacts artifacts: 'target/karate-reports/karate-summary.html', allowEmptyArchive: true
+                    //publishHTML([
+                    //    reportDir: 'target/karate-reports',
+                    //    reportFiles: 'karate-summary.html',
+                    //    reportName: 'Karate Test Report'
+                    //])
                     bat "mvn test"
                     junit 'target/surefire-reports/*.xml'
                 }
@@ -43,12 +43,12 @@ pipeline {
                         dir('movie-management') {
                             echo 'Running OWASP Dependency-Check...'
                             bat "mvn org.owasp:dependency-check-maven:check"
-                            archiveArtifacts artifacts: 'target/dependency-check-report.html', allowEmptyArchive: true
-                            publishHTML([
-                                reportDir: 'target',
-                                reportFiles: 'dependency-check-report.html',
-                                reportName: 'OWASP Dependency Check Report'
-                            ])
+                            //archiveArtifacts artifacts: 'target/dependency-check-report.html', allowEmptyArchive: true
+                            //publishHTML([
+                            //    reportDir: 'target',
+                            //    reportFiles: 'dependency-check-report.html',
+                            //    reportName: 'OWASP Dependency Check Report'
+                            //])
                         }
                     }
                 }
