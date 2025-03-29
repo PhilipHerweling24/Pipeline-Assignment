@@ -109,7 +109,7 @@ pipeline {
             steps {
                 echo 'Deploying application to EC2 using Ansible...'
                 script {
-                    bat 'wsl ansible-playbook -i inventory.ini deploy.yaml"'
+                    bat 'wsl bash -c ansible-playbook -i inventory.ini deploy.yaml"'
                 }
             }
         }
