@@ -3,6 +3,8 @@ pipeline {
 
     environment {
         MAVEN_OPTS = '-Dmaven.test.failure.ignore=false'
+        DOCKERHUB_USERNAME = credentials('Dockerhub').username
+        DOCKERHUB_TOKEN = credentials('Dockerhub').password
     }
 
     stages {
@@ -102,7 +104,25 @@ pipeline {
             }
         }
 
+        stage('Docker Build & Push') {
+                    steps {
+                        dir('movie-management') {
+                            script {
+                                def dockerImage = 'philipherweling/movie-management'
+                                def imageTag = "latest"
 
+                                echo "Logging in to Docker Hub..."
+                                sh "echo ${DOCKERHUB_TOKEN} | docker login -u ${DOCKERHUB_USERNAME} --password-stdin"
+
+                                echo "Building Docker image..."
+                                sh "docker build -t ${dockerImage}:${imageTag} ."
+
+                                echo "Pushing Docker image to Docker Hub..."
+                                sh "docker push ${dockerImage}:${imageTag}"
+                            }
+                        }
+                    }
+                }
 
 
         stage('Deploy to EC2') {
