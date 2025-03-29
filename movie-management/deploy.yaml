@@ -1,12 +1,14 @@
----
 - name: Deploy Movie Management API using Docker
-  hosts: movie_api
-  become: yes
+  hosts: movie-api
+  become: true
 
   vars:
     app_name: movie-api
     docker_image: philipherweling/movie-management:latest
     container_port: 8081
+
+  environment:
+    DOCKER_HOST: unix:///var/run/docker.sock
 
   tasks:
     - name: Ensure Docker is installed
@@ -20,22 +22,32 @@
         enabled: yes
         state: started
 
+    - name: Install Docker Python SDK
+      pip:
+        name: docker
+        executable: pip3
+
     - name: Remove existing container (if any)
-      docker_container:
-        name: "movie-management-api"
+      community.docker.docker_container:
+        name: "{{ app_name }}"
         state: absent
-        force_kill: yes
+        force_kill: true
 
     - name: Pull latest image from Docker Hub
-      docker_image:
-        name: "philipherweling/movie-management:latest"
+      community.docker.docker_image:
+        name: "{{ docker_image }}"
         source: pull
 
     - name: Run the Docker container
-      docker_container:
-        name: "movie-management-api"
-        image: "philipherweling/movie-management:latest"
+      community.docker.docker_container:
+        name: "{{ app_name }}"
+        image: "{{ docker_image }}"
         state: started
         restart_policy: always
         ports:
           - "8081:8081"
+
+
+
+
+
