@@ -24,7 +24,7 @@ public class MovieControllerIntegrationTest {
     private TestRestTemplate restTemplate;
 
     @Test
-    public void testGetAllMoviesFromTestDB() {
+    void testGetAllMoviesFromTestDB() {
         ResponseEntity<MovieDto[]> response = restTemplate.getForEntity("/movies", MovieDto[].class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode(), "Expected HTTP status 200 OK");
@@ -34,7 +34,7 @@ public class MovieControllerIntegrationTest {
     }
 
     @Test
-    public void testGetMovieByIdFound() {
+    void testGetMovieByIdFound() {
         ResponseEntity<MovieDto> response = restTemplate.getForEntity("/movies/{id}", MovieDto.class, 1);
 
         assertEquals(HttpStatus.OK, response.getStatusCode(), "Expected HTTP status 200 OK");
@@ -46,7 +46,7 @@ public class MovieControllerIntegrationTest {
     }
 
     @Test
-    public void testUpdateMovieIntegration() {
+    void testUpdateMovieIntegration() {
 
         MovieDto updateDto = new MovieDto();
         updateDto.setTitle("Interstellar Updated");
@@ -69,7 +69,7 @@ public class MovieControllerIntegrationTest {
     }
 
     @Test
-    public void testDeleteMovieIntegration() {
+    void testDeleteMovieIntegration() {
         ResponseEntity<ResponseDto> deleteResponse = restTemplate.exchange("/movies/{id}", HttpMethod.DELETE,
                 null, ResponseDto.class, 4);
 

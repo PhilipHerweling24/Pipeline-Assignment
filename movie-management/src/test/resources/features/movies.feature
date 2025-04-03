@@ -11,7 +11,7 @@ Feature: Movie API Integration Tests
     Then status 200
     And match response[*].title contains "Inception"
     And match response[*].title contains "The Dark Knight"
-    
+
   # ---------------------------------------------------------------------------
   Scenario: Create new movie - The Prestige
     Given path 'movies'
