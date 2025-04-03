@@ -79,6 +79,40 @@ class MovieServiceImplTest {
     }
 
     @Test
+    void testUpdateMovie_WhenMovieExists_ReturnsUpdatedMovie() {
+        // Arrange
+        Long movieId = 1L;
+        Movie existingMovie = new Movie(movieId, "Old Title", "Old Director", 2000);
+        MovieDto updatedDto = new MovieDto(null, "New Title", "New Director", 2023);
+        Movie savedMovie = new Movie(movieId, "New Title", "New Director", 2023);
+
+        when(movieRepository.findById(movieId)).thenReturn(Optional.of(existingMovie));
+        when(movieRepository.save(any(Movie.class))).thenReturn(savedMovie);
+
+        // Act
+        MovieDto result = movieService.updateMovie(movieId, updatedDto);
+
+        // Assert
+        assertNotNull(result, "Returned MovieDto should not be null");
+        assertEquals("New Title", result.getTitle(), "Expected updated title");
+        assertEquals("New Director", result.getDirector(), "Expected updated director");
+        assertEquals(2023, result.getReleaseDate(), "Expected updated release year");
+    }
+
+    @Test
+    void testUpdateMovie_WhenMovieNotFound_ThrowsException() {
+        // Arrange
+        Long movieId = 99L;
+        MovieDto updateDto = new MovieDto(null, "Doesn't Matter", "No One", 2023);
+        when(movieRepository.findById(movieId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        Exception exception = assertThrows(RuntimeException.class, () -> movieService.updateMovie(movieId, updateDto));
+        assertEquals("Movie not found with id: 99", exception.getMessage(), "Expected 'not found' exception message");
+    }
+
+
+    @Test
     void testDeleteMovie_WhenMovieExists_CompletesWithoutError() {
         // Arrange
         when(movieRepository.existsById(1L)).thenReturn(true);
@@ -95,5 +129,38 @@ class MovieServiceImplTest {
         // Act & Assert
         Exception exception = assertThrows(IllegalArgumentException.class, () -> movieService.deleteMovie(1L));
         assertEquals("Movie with ID 1 not found, cannot delete", exception.getMessage());
+    }
+
+    @Test
+    void testSaveMovie_WhenTitleIsBlank_ThrowsException() {
+        Movie movie = new Movie();
+        movie.setTitle(" ");
+        movie.setDirector("Nolan");
+        movie.setReleaseDate(2020);
+
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> movieService.saveMovie(movie));
+        assertEquals("Movie title cannot be blank", ex.getMessage());
+    }
+
+    @Test
+    void testSaveMovie_WhenDirectorIsBlank_ThrowsException() {
+        Movie movie = new Movie();
+        movie.setTitle("Inception");
+        movie.setDirector(" ");
+        movie.setReleaseDate(2020);
+
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> movieService.saveMovie(movie));
+        assertEquals("Movie director cannot be blank", ex.getMessage());
+    }
+
+    @Test
+    void testSaveMovie_WhenReleaseIsLessThan1800_ThrowsException() {
+        Movie movie = new Movie();
+        movie.setTitle("Inception");
+        movie.setDirector("Nolan");
+        movie.setReleaseDate(1799);
+
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> movieService.saveMovie(movie));
+        assertEquals("Release date is unrealistic, must be after 1800", ex.getMessage());
     }
 }

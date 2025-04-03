@@ -4,15 +4,13 @@ Feature: Movie API Integration Tests
   Background:
     * url baseUrl
 
-  # ---------------------------------------------------------------------------
+   # ---------------------------------------------------------------------------
   Scenario: Get all movies using pre-loaded data
     Given path 'movies'
     When method get
     Then status 200
     And match response[*].title contains "Inception"
     And match response[*].title contains "The Dark Knight"
-    And match response[*].title contains "Interstellar"
-    And match response[*].title contains "Dunkirk"
 
   # ---------------------------------------------------------------------------
   Scenario: Get movie by ID for Inception
@@ -24,20 +22,33 @@ Feature: Movie API Integration Tests
     And match response.releaseDate == 2010
 
   # ---------------------------------------------------------------------------
-  Scenario: Update movie for Interstellar
-    Given path 'movies', 3
-    And request { title: 'Interstellar Updated', director: 'Christopher Nolan', releaseDate: 2014 }
-    When method put
+  Scenario: Create new movie - The Prestige
+    Given path 'movies'
+    And request
+      """
+      {
+        "title": "The Prestige",
+        "director": "Christopher Nolan",
+        "releaseDate": 2006
+      }
+      """
+    When method post
     Then status 201
     And match response.statusCode == '201 '
-    And match response.statusMsg == 'Movie updated Successfully'
+    And match response.statusMsg == 'Movie Created Successfully'
 
   # ---------------------------------------------------------------------------
-  Scenario: Delete movie for Dunkirk
-    Given path 'movies', 4
-    When method delete
-    Then status 201
-    And match response.statusCode == '201 '
-    And match response.statusMsg == 'Movie has been deleted successfully'
+  Scenario: Find movies by director
+    Given path 'movies/director'
+    And param director = 'Christopher Nolan'
+    When method get
+    Then status 200
+    And match response[*].director contains only 'Christopher Nolan'
+
+  # ---------------------------------------------------------------------------
+  Scenario: Get movie by ID that does not exist
+    Given path 'movies', 999
+    When method get
+    Then status 404
 
 

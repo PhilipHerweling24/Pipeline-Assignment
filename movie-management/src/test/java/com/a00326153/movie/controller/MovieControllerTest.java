@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -139,4 +140,67 @@ class MovieControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].title", is("Inception")));
     }
+
+    @Test // Test for retrieving a movie by ID when the movie is not found
+    void getMovieById_NotFound_ReturnsNotFoundError() throws Exception {
+        // Arrange
+        given(movieService.findMovieById(999L)).willThrow(new RuntimeException("Movie not found with id: 999"));
+
+        // Act & Assert
+        mockMvc.perform(get("/movies/{id}", 999))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test // Test for creating a movie with invalid data (missing title)
+    void createMovie_InvalidData_ReturnsBadRequest() throws Exception {
+        // Arrange
+        Movie invalidMovie = new Movie(); // Missing title, director, releaseDate
+        given(movieService.saveMovie(any(Movie.class)))
+                .willThrow(new IllegalArgumentException("Movie title cannot be blank"));
+
+        // Act & Assert
+        mockMvc.perform(post("/movies")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidMovie)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test // Test for updating a movie when it doesn't exist
+    void updateMovie_NotFound_ReturnsNotFoundError() throws Exception {
+        // Arrange
+        MovieDto updateDto = new MovieDto(null, "New Title", "New Director", 2023);
+        given(movieService.updateMovie(anyLong(), any(MovieDto.class)))
+                .willThrow(new RuntimeException("Movie not found with id: 5"));
+
+        // Act & Assert
+        mockMvc.perform(put("/movies/{id}", 5)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateDto)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test // Test for deleting a movie when it doesn't exist
+    void deleteMovie_NotFound_ReturnsNotFoundError() throws Exception {
+        // Arrange
+        doThrow(new IllegalArgumentException("Movie with ID 123 not found, cannot delete"))
+                .when(movieService).deleteMovie(123L);
+
+        // Act & Assert
+        mockMvc.perform(delete("/movies/{id}", 123))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test // Test for retrieving movies by director when no results are found
+    void findMoviesByDirector_NoResults_ReturnsEmptyList() throws Exception {
+        // Arrange
+        given(movieService.findMoviesByDirector(anyString())).willReturn(List.of());
+
+        // Act & Assert
+        mockMvc.perform(get("/movies/director")
+                        .param("director", "Unknown Director")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
+    }
+
 }

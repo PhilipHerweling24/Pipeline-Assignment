@@ -62,7 +62,7 @@ public class MovieServiceImpl implements MovieService {
             throw new IllegalArgumentException("Movie director cannot be blank");
         }
         if (movie.getReleaseDate() < 1800) {
-            throw new IllegalArgumentException("Release date is unrealistic, must be after 1877");
+            throw new IllegalArgumentException("Release date is unrealistic, must be after 1800");
         }
     }
 }
