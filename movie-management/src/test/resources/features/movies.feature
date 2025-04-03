@@ -43,7 +43,7 @@ Feature: Movie API Integration Tests
     And param director = 'Christopher Nolan'
     When method get
     Then status 200
-    And match response[*].director contains only 'Christopher Nolan'
+    And match each response[*].director == 'Christopher Nolan'
 
   # ---------------------------------------------------------------------------
   Scenario: Get movie by ID that does not exist
