@@ -22,11 +22,6 @@
         enabled: yes
         state: started
 
-    - name: Install Docker Python SDK
-      pip:
-        name: docker
-        executable: pip3
-
     - name: Remove existing container (if any)
       community.docker.docker_container:
         name: "{{ app_name }}"
