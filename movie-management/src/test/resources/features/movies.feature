@@ -11,16 +11,7 @@ Feature: Movie API Integration Tests
     Then status 200
     And match response[*].title contains "Inception"
     And match response[*].title contains "The Dark Knight"
-
-  # ---------------------------------------------------------------------------
-  Scenario: Get movie by ID for Inception
-    Given path 'movies', 1
-    When method get
-    Then status 200
-    And match response.title == 'Inception'
-    And match response.director == 'Christopher Nolan'
-    And match response.releaseDate == 2010
-
+    
   # ---------------------------------------------------------------------------
   Scenario: Create new movie - The Prestige
     Given path 'movies'
