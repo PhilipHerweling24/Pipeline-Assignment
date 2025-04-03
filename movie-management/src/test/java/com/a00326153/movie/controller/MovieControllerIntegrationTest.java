@@ -18,7 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("dev")
-public class MovieControllerIntegrationTest {
+class MovieControllerIntegrationTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
