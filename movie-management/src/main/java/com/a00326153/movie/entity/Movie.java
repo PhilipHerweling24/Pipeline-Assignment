@@ -6,7 +6,7 @@ import lombok.*;
 @Entity
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
 public class Movie {
-
+    // demo
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
