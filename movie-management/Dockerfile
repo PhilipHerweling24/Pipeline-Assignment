@@ -8,7 +8,7 @@ WORKDIR /app
 # 3. Copy the built JAR file from local to the container
 COPY target/movie-management-0.0.1-SNAPSHOT.jar /app/movie-management-0.0.1-SNAPSHOT.jar
 
-# 4. Expose the application port (Spring Boot default is 8080)
+# 4. Expose the application port
 EXPOSE 8081
 
 # 5. Define the command to run the application
