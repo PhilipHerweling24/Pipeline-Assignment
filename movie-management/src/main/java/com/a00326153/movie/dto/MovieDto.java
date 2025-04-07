@@ -1,12 +1,9 @@
 package com.a00326153.movie.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @EqualsAndHashCode(callSuper = true)
 public class MovieDto extends RepresentationModel<MovieDto> {
 
     private Long id;
