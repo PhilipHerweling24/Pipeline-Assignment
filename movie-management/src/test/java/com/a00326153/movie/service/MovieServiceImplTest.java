@@ -18,13 +18,14 @@ class MovieServiceImplTest {
     private MovieRepository movieRepository;
     private MovieServiceImpl movieService;
 
+    //Ensures that a fresh mock instance is created before each test
     @BeforeEach
     void setup() {
         movieRepository = mock(MovieRepository.class);
         movieService = new MovieServiceImpl(movieRepository);
     }
 
-    @Test
+    @Test //test to find all movies
     void testFindAllMovies_ReturnsAllMovies() {
         // Arrange
         Movie movie1 = new Movie(1L, "Inception", "Christopher Nolan", 2010);
@@ -40,7 +41,7 @@ class MovieServiceImplTest {
         assertEquals("Inception", results.get(0).getTitle());
     }
 
-    @Test
+    @Test //Test to find a movie by an ID which exists
     void testFindMovieById_WhenMovieExists_ReturnsMovie() {
         // Arrange
         Movie movie = new Movie(1L, "Inception", "Christopher Nolan", 2010);
@@ -54,7 +55,7 @@ class MovieServiceImplTest {
         assertEquals("Inception", result.getTitle());
     }
 
-    @Test
+    @Test //Test to find a movie by an ID which doesn't exist
     void testFindMovieById_WhenMovieDoesNotExist_ThrowsException() {
         // Arrange
         when(movieRepository.findById(1L)).thenReturn(Optional.empty());
@@ -64,7 +65,7 @@ class MovieServiceImplTest {
         assertEquals("Movie not found with id: 1", exception.getMessage());
     }
 
-    @Test
+    @Test //Test to save a movie and return said movie
     void testSaveMovie_SavesAndReturnsMovie() {
         // Arrange
         Movie movie = new Movie(1L, "Inception", "Christopher Nolan", 2010);
@@ -78,7 +79,7 @@ class MovieServiceImplTest {
         assertEquals("Inception", savedMovie.getTitle());
     }
 
-    @Test
+    @Test //Tests to update a movie which does exist
     void testUpdateMovie_WhenMovieExists_ReturnsUpdatedMovie() {
         // Arrange
         Long movieId = 1L;
@@ -99,7 +100,7 @@ class MovieServiceImplTest {
         assertEquals(2023, result.getReleaseDate(), "Expected updated release year");
     }
 
-    @Test
+    @Test //Test to update a movie when the movie doesn't exist
     void testUpdateMovie_WhenMovieNotFound_ThrowsException() {
         // Arrange
         Long movieId = 99L;
@@ -112,7 +113,7 @@ class MovieServiceImplTest {
     }
 
 
-    @Test
+    @Test //Test to delete a movie which does exist
     void testDeleteMovie_WhenMovieExists_CompletesWithoutError() {
         // Arrange
         when(movieRepository.existsById(1L)).thenReturn(true);
@@ -121,7 +122,7 @@ class MovieServiceImplTest {
         assertDoesNotThrow(() -> movieService.deleteMovie(1L));
     }
 
-    @Test
+    @Test //Test to delete a movie which doesn't exist
     void testDeleteMovie_WhenMovieDoesNotExist_ThrowsException() {
         // Arrange
         when(movieRepository.existsById(1L)).thenReturn(false);
@@ -131,7 +132,7 @@ class MovieServiceImplTest {
         assertEquals("Movie with ID 1 not found, cannot delete", exception.getMessage());
     }
 
-    @Test
+    @Test //Test to save a movie when the title is left blank
     void testSaveMovie_WhenTitleIsBlank_ThrowsException() {
         Movie movie = new Movie();
         movie.setTitle(" ");
@@ -142,7 +143,7 @@ class MovieServiceImplTest {
         assertEquals("Movie title cannot be blank", ex.getMessage());
     }
 
-    @Test
+    @Test //test to a save a movie when the director is left blank
     void testSaveMovie_WhenDirectorIsBlank_ThrowsException() {
         Movie movie = new Movie();
         movie.setTitle("Inception");
@@ -153,7 +154,7 @@ class MovieServiceImplTest {
         assertEquals("Movie director cannot be blank", ex.getMessage());
     }
 
-    @Test
+    @Test //test to save a movie when teh release date is less than 1800
     void testSaveMovie_WhenReleaseIsLessThan1800_ThrowsException() {
         Movie movie = new Movie();
         movie.setTitle("Inception");

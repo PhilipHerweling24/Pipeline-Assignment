@@ -31,6 +31,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(MovieController.class)
 class MovieControllerTest {
 
+    //loads only the controller and related web components
     @Autowired
     private MockMvc mockMvc;
 
