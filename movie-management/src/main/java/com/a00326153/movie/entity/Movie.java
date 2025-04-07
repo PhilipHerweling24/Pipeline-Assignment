@@ -10,11 +10,8 @@ public class Movie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
     private String title;
-
     private String director;
-
     private int releaseDate;
 
 }
